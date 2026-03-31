@@ -15,9 +15,17 @@ export const useBoardStore = create<BoardState>((set) => ({
 
     try {
       // 클라이언트 측 타임스탬프 생성 (ISO 8601 형식)
-      const timestamp = new Date().toISOString(); 
-      // 한국 시간 기준으로
-      const timestampKST = new Date(timestamp).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+      const now = new Date();
+      const timestampKST = now.toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false // 24시간제로 표시 (예: 2026. 03. 31. 22:28:31)
+      });
       
       // 환경변수에서 구글 앱스 스크립트 URL을 가져옴
       const SCRIPT_URL = process.env.NEXT_PUBLIC_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwe1NXqMF2CURJgkK0m3fi3Pc4RUksw69OZX79pfJJpHjgf4HBZKHacp541p4Os0_e9/exec';
