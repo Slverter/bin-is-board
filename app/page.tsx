@@ -85,6 +85,12 @@ export default function BoardPage() {
           <div className="min-h-[20px] mt-3 text-[13px] text-[#f1f1f1] text-left">
             {status}
           </div>
+          <div>
+            <a href="https://www.instagram.com/bin_is_board/" className="py-2 px-4 border bg-black"
+            target="_blank"
+            rel="noopener noreferrer"
+            >게시판 확인하러 가기</a>
+          </div>
         </section>
       </main>
     </div>
