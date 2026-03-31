@@ -16,6 +16,8 @@ export const useBoardStore = create<BoardState>((set) => ({
     try {
       // 클라이언트 측 타임스탬프 생성 (ISO 8601 형식)
       const timestamp = new Date().toISOString(); 
+      // 한국 시간 기준으로
+      const timestampKST = new Date(timestamp).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
       
       // 환경변수에서 구글 앱스 스크립트 URL을 가져옴
       const SCRIPT_URL = process.env.NEXT_PUBLIC_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwe1NXqMF2CURJgkK0m3fi3Pc4RUksw69OZX79pfJJpHjgf4HBZKHacp541p4Os0_e9/exec';
@@ -26,7 +28,7 @@ export const useBoardStore = create<BoardState>((set) => ({
         headers: {
           'Content-Type': 'text/plain;charset=utf-8',
         },
-        body: JSON.stringify({ timestamp, author, content }),
+        body: JSON.stringify({ timestampKST, author, content }),
       });
 
       const result = await response.json();
