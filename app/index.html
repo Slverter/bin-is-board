@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bin-is-board</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #111;
+      color: #fff;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      background-image: url('./background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: contrast(0.95) brightness(0.7);
+      image-rendering: pixelated;
+      z-index: 0;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.28);
+      z-index: 1;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 2;
+      width: min(92vw, 760px);
+      padding: clamp(16px, 3vw, 28px);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      font-weight: 700;
+      text-transform: lowercase;
+    }
+
+    .panel {
+      width: 100%;
+      background: rgba(20, 20, 20, 0.78);
+      border: 2px solid rgba(255,255,255,0.55);
+      padding: clamp(14px, 2.5vw, 22px);
+      backdrop-filter: blur(2px);
+    }
+
+    form {
+      display: grid;
+      gap: 10px;
+    }
+
+    textarea,
+    input {
+      width: 100%;
+      border: 2px solid #d9d9d9;
+      background: rgba(255,255,255,0.92);
+      color: #111;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 0;
+      outline: none;
+      appearance: none;
+    }
+
+    textarea {
+      min-height: clamp(120px, 20vw, 180px);
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 160px;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    button {
+      border: 2px solid #fff;
+      background: #000;
+      color: #fff;
+      padding: 12px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 0;
+      min-height: 48px;
+    }
+
+    button:hover {
+      background: #222;
+    }
+
+    .guide {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.82);
+      text-align: left;
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #f1f1f1;
+      text-align: left;
+    }
+
+    @media (max-width: 640px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="overlay"></div>
+
+  <main class="wrap">
+    <h1>bin-is-board</h1>
+    <section class="panel">
+      <form id="postForm">
+        <textarea id="content" name="content" placeholder="내용 입력"></textarea>
+
+        <div class="row">
+          <input id="author" name="author" type="text" placeholder="게시자명 입력 (선택)" />
+          <button type="submit">게시하기</button>
+        </div>
+
+        <p class="guide">자유게시판에 게시하고 싶은 내용을 입력해주세요. 게시자명은 따로 입력하지 않으면 익명으로 업로드 됩니다.</p>
+      </form>
+
+      <div class="status" id="status"></div>
+    </section>
+  </main>
+
+  <script>
+    const SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
+
+    const form = document.getElementById('postForm');
+    const contentInput = document.getElementById('content');
+    const authorInput = document.getElementById('author');
+    const statusEl = document.getElementById('status');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const content = contentInput.value.trim();
+      const author = authorInput.value.trim() || '익명';
+
+      if (!content) {
+        statusEl.textContent = '내용을 입력해주세요.';
+        return;
+      }
+
+      statusEl.textContent = '게시 중...';
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({ content, author })
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+          statusEl.textContent = '게시되었습니다.';
+          contentInput.value = '';
+          authorInput.value = '';
+        } else {
+          statusEl.textContent = '오류: ' + (result.error || '알 수 없는 문제');
+        }
+      } catch (error) {
+        statusEl.textContent = '전송 실패: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
