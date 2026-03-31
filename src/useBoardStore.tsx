@@ -16,7 +16,7 @@ export const useBoardStore = create<BoardState>((set) => ({
     try {
       // 클라이언트 측 타임스탬프 생성 (ISO 8601 형식)
       const now = new Date();
-      const timestampKST = now.toLocaleString('ko-KR', {
+      const timestamp = now.toLocaleString('ko-KR', {
         timeZone: 'Asia/Seoul',
         year: 'numeric',
         month: '2-digit',
@@ -36,7 +36,7 @@ export const useBoardStore = create<BoardState>((set) => ({
         headers: {
           'Content-Type': 'text/plain;charset=utf-8',
         },
-        body: JSON.stringify({ timestampKST, author, content }),
+        body: JSON.stringify({ timestamp, author, content }),
       });
 
       const result = await response.json();
